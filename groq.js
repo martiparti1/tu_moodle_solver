@@ -4,7 +4,7 @@ require('dotenv').config();
 const groq = new Groq({apiKey : process.env.GROQ_API_KEY});
 
 async function answerQuestion(questionData){
-    const prerequisite = await groq.chat.completions
+    const chat_response = await groq.chat.completions
     .create({
         messages : [
             {
@@ -13,10 +13,10 @@ async function answerQuestion(questionData){
             }
         ],
         model : "llama-3.3-70b-versatile"
-    })
-    .then ((chatCompletion) => {
-        console.log(chatCompletion.choices[0]?.message?.content || "")
-    })
+    });
+
+    //return index of answer
+    return (chat_response.choices[0]?.message?.content || "") 
 }
 
 
