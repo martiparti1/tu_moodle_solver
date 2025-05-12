@@ -23,6 +23,12 @@ async function getQuestionData(page, questionData){
     const questionType = await page.evaluate(() => {
         let qText = document.querySelector("div.prompt").textContent.trim();
 
+        let ans_firstChild = document.querySelector("div.answer").firstElementChild;
+
+        if (qAnswers.firstElementChild.querySelector('input[type="radio"]'))
+            return "single choice"
+        else if (qAnswers.firstChild.querySelector)
+
         if(qText.toLowerCase() == "изберете едно") return "single choice";
         else return "multiple choice";
     });

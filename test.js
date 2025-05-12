@@ -8,7 +8,8 @@ const  {answerQuestion} = require('./groq.js');
   const browser = await puppeteer.launch({
     headless: false,
     // uncomment if you have unusual chrome install / want to use a different browser
-    executablePath : "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    // executablePath : "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    executablePath : "/usr/bin/google-chrome-stable",
     defaultViewport : null,
 
   });
