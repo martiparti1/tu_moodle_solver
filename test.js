@@ -15,7 +15,7 @@ const  {answerQuestion} = require('./groq.js');
   });
   const page = await browser.newPage();
 
-  await page.goto('https://mdl.fcst.tu-sofia.bg/mod/quiz/view.php?id=361', {waitUntil : 'networkidle2'});
+  await page.goto('https://mdl.fcst.tu-sofia.bg/mod/quiz/view.php?id=2632', {waitUntil : 'networkidle2'});
   console.log("Page loaded\n");
 
   let login = await moodle_login(process.env.MOODLE_USERNAME ,  process.env.MOODLE_PASSWORD , page);
@@ -24,7 +24,8 @@ const  {answerQuestion} = require('./groq.js');
 
   await page.waitForSelector("div.singlebutton.quizstartbuttondiv")
   await page.click("div.singlebutton.quizstartbuttondiv")
-  await delay(1000)
+  console.log("quiz start button clicked \n giving 0s delay")
+  // await delay(1000)
 
   // await page.waitForSelector('input#id_cancel[type="submit"][value="Отказване"]')
   // await page.click('input#id_cancel[type="submit"][value="Отказване"]')
@@ -45,7 +46,9 @@ const  {answerQuestion} = require('./groq.js');
   let qCount = 1;
 
   //testing one here
-  // page.on("load", async function handleLoad(){
+  //! adding delay directly before load event prevents it from happening
+
+  page.on("load", async function handleLoad(){
     console.log("page loading, waiting 1s\n")
     await delay(1000)
     
@@ -59,8 +62,11 @@ const  {answerQuestion} = require('./groq.js');
       console.log(questionData)
     }
 
-    else{console.log("didnt fidn question element")}
-  // })
+    else{
+      console.log("didnt fidn question element")
+      page.off("load", handleLoad);
+    }
+  })
 
 
 

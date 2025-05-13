@@ -26,7 +26,7 @@ async function getQuestionData(page, questionData){
     questionData['instructions'] = "In this JSON-like string is a question from a quiz. You are to answer it according to the instructions in the handleQuestion key. Answer in a JSON format according to the specific instructions."
     
     
-    //! get the question
+    //! get the question text
     await delay(500);
     const questionText = await page.evaluate(() => {
 
