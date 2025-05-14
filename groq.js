@@ -7,16 +7,26 @@ async function answerQuestion(questionData){
     const chat_response = await groq.chat.completions
     .create({
         messages : [
+            //TODO add system instructions here 
+            {
+                role : "system",
+                content : "only answer according to the instructions"
+            },
+
             {
                 role: "user",
                 content : JSON.stringify(questionData)
             }
         ],
-        model : "llama-3.3-70b-versatile"
+        model : "llama3-70b-8192",
+        temperature : 0,
+        //forces response to JSON structure
+        // response_format : {"type" : "json_object"}
     });
 
-    //return index of answer
-    return (chat_response.choices[0]?.message?.content || "") 
+    //return answer
+    //! even tho response is json structured it breaks if not parsed
+    return (JSON.parse(chat_response.choices[0]?.message?.content) || "") 
 }
 
 
