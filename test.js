@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 require('dotenv').config();
-const  {delay, getQuestionData, moodle_login} = require('./lib.js');
+const  {delay, moodle_login, getQuestionData, submitQuestion, quizAuth} = require('./lib.js');
 const  {answerQuestion} = require('./groq.js');
 
 
@@ -15,56 +15,68 @@ const  {answerQuestion} = require('./groq.js');
   });
   const page = await browser.newPage();
 
-  await page.goto('https://mdl.fcst.tu-sofia.bg/mod/quiz/view.php?id=2632', {waitUntil : 'networkidle2'});
+  await page.goto('https://mdl.fcst.tu-sofia.bg/mod/quiz/view.php?id=2629', {waitUntil : 'networkidle2'});
   console.log("Page loaded\n");
 
   let login = await moodle_login(process.env.MOODLE_USERNAME ,  process.env.MOODLE_PASSWORD , page);
   console.log(`${login}\n`)
   await delay(1000)
 
-  await page.waitForSelector("div.singlebutton.quizstartbuttondiv")
+
+  console.log("running quiz auth check :)")
+  // await delay(3000)
+  await quizAuth(page);
+
+  await page.waitForSelector("div.singlebutton.quizstartbuttondiv", {timeout : 3000})
   await page.click("div.singlebutton.quizstartbuttondiv")
-  console.log("quiz start button clicked \n giving 0s delay")
+  console.log("quiz start button clicked")
+  
   // await delay(1000)
 
   // await page.waitForSelector('input#id_cancel[type="submit"][value="Отказване"]')
   // await page.click('input#id_cancel[type="submit"][value="Отказване"]')
 
 
-  //quiz auth --- ONLY REQUIRED FOR THE EXAMPLE QUIZ
-  // await page.waitForSelector(`input#id_quizpassword[type="password"]`)
-  // await page.type(`input#id_quizpassword[type="password"]`, "123456")
-  // console.log("quiz password filled\n")
+  
+  
 
-  //quiz start
-  // await page.waitForSelector(`input#id_submitbutton[type="submit"]`)
-  // await page.click(`input#id_submitbutton[type="submit"]`)
-  // console.log("quiz started\n")
-  // await delay(1000)
+  //! calling delay function before load event prevents it from happening
 
-
-  let qCount = 1;
-
-  //testing one here
-  //! adding delay directly before load event prevents it from happening
-
-  page.on("load", async function handleLoad(){
-    console.log("page loading, waiting 1s\n")
-    await delay(1000)
+  page.on("load",async function handleLoad(){
+    console.log("page loading, waiting 0.3s\n")
+    await delay(300)
     
     let questionElement = await page.$('div.qtext');
-
+    //? if we have a question on page solve and go next
     if(questionElement){
-      console.log("question element found\n")
+      console.log("question element found, getting answer...\n")
+
+      //put all question data in json
       let questionData = {};
       await getQuestionData(page, questionData);
 
-      console.log(questionData)
+      //pass answer and question type to submit function
+      let answer = await answerQuestion(questionData);
+      let qType  = questionData['questionType'];
+      // console.log(questionData);
+      // console.log(answer)
+      // console.log(`qType is ${qType}`)
+
+      submitQuestion(page, answer, qType)
     }
 
     else{
-      console.log("didnt fidn question element")
+      console.log("no more questions :))) submitting now!! \n");
+      await page.waitForSelector('button.btn-primary[type="submit"]')
+      await page.click('button.btn-primary[type="submit"]')
+
+      await delay(500)
+
+      await page.waitForSelector('button.btn-primary[type="button"][data-action="save"]')
+      await page.click('button.btn-primary[type="button"][data-action="save"]')
+
       page.off("load", handleLoad);
+      return;
     }
   })
 
@@ -84,13 +96,12 @@ const  {answerQuestion} = require('./groq.js');
 
 
   //     //handle answer for single choice question
-  //       let answer_index = await answerQuestion (questionData);
-  //       console.log(`index of answer : ${answer_index}\n`)
+  //       let correct = await answerQuestion (questionData);
 
   //       await page.evaluate((index) => {
   //         let answers = document.querySelector("div.answer").children;
   //         answers[index].querySelector('input[type="radio"]').click();
-  //       }, answer_index)
+  //       }, correct)
   //     //ends here
 
   //     console.log(`for question ${qCount} clicked on answer ${answer_index} \nwaiting 1s `)
@@ -119,7 +130,6 @@ const  {answerQuestion} = require('./groq.js');
   //   }
   // })
 
-  console.log("successfully  submitted :)")
 
 
 
