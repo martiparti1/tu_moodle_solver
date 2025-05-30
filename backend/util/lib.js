@@ -7,6 +7,7 @@ function delay(ms){
 }
 
 async function moodle_login(username, password, page){
+    page.waitForNavigation({waitUntil: "networkidle0"})
     await page.waitForSelector(`input[type="text"]#username`);
     await page.type(`input[type="text"]#username`, username);
     await page.waitForSelector(`input[type="password"]#password`);
@@ -23,23 +24,19 @@ async function moodle_login(username, password, page){
 
 }
 
-async function quizAuth(page, password){
+
+async function quizAuth(page,password){
     try{
         await page.waitForSelector('input#id_submitbutton[type="submit"]', {timeout : 1500});
 
-        try{
-            await page.waitForSelector(`input#id_quizpassword[type="password"]`)
-            await page.type(`input#id_quizpassword[type="password"]`, password)
-            console.log("Quiz password filled")
-        } catch(error){
-            console.log("no quiz auth found, proceding ")
-        }
+        const pwField = await page.$('input#id_quizpassword[type="password"]')
+        if(pwField) await page.type('input#id_quizpassword[type="password"]', password)
 
-        await page.click('input#id_submitbutton[type="submit"]')
-        console.log("quiz started \n")
-    } catch(error){
-        console.log("no popup before quiz start \n")
-    }
+        await Promise.all([
+            page.waitForNavigation({ waitUntil: 'networkidle0' }),
+            page.click('input#id_submitbutton[type="submit"]')
+        ])
+    }catch{}
 }
 
 
@@ -85,10 +82,8 @@ async function getQuestionData(page, questionData){
         if (imageData) questionData['img_base64'] = imageData.base64;
     }
 
-    //? determine the type of answer required
     questionData = await handleQuestionType(page, questionData);
 
-    //? text based answers : one answer = one string
     if(questionData['questionType'] == 'single choice' || questionData['questionType'] == 'multiple choice'){
 
         const answers_json = await page.evaluate(() => {
@@ -106,7 +101,6 @@ async function getQuestionData(page, questionData){
         else questionData['answers'] = `problem finding answers; data --> ${answers_json}`;
     }
 
-    //? get select options
     if(questionData['questionType'] == 'text+select'){
        questionData['units'] =  await page.$$eval('.answer > select option', opts => opts.map(opt => opt.value).filter( opt => opt !== ''));
     }
@@ -166,9 +160,6 @@ async function submitQuestion(page, answer, qType){
     
 }
 
-//TODO put image url in obj
-
-//!functions below are only used interanally in this file
 
 async function handleQuestionType(page, questionData){
 
