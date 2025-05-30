@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login(){
-
+    const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error,setError] = useState("")
@@ -29,9 +30,13 @@ export default function Login(){
         setTimeout(()=>{
             const failedValidation = validation_handling.find(rule => rule.test())
 
-            failedValidation ? setError(failedValidation.message) : setLoginSuccess(true)
+            if (failedValidation) setError(failedValidation.message) 
+            else{
+                setIsLoading(false)
+                setLoginSuccess(true)
+                navigate('/test')
+            }
 
-            setIsLoading(false)
         },1000)
         
         
@@ -86,10 +91,10 @@ export default function Login(){
                     disabled = {isLoading}
                 >
                     {isLoading ? (
-                        <span className="flex justify-center items-center gap-[10px]">
+                        <div className="flex justify-center items-center gap-[10px]">
                             <span className="animate-spin">⏳</span>
                             <p>Logging in...</p>
-                        </span>
+                        </div>
                     ) : (
                         'Log in'
                     )}
