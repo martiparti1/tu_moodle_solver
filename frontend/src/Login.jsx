@@ -22,24 +22,38 @@ export default function Login(){
         }
     ]
 
-    function checkInput(){
-        setIsLoading(true);
-        setError("");
-        setLoginSuccess(false);
+    // function checkInput(){
+    //     setIsLoading(true);
+    //     setError("");
+    //     setLoginSuccess(false);
 
-        setTimeout(()=>{
-            const failedValidation = validation_handling.find(rule => rule.test())
+    //     setTimeout(()=>{
+    //         const failedValidation = validation_handling.find(rule => rule.test())
 
-            if (failedValidation) setError(failedValidation.message) 
-            else{
-                setIsLoading(false)
-                setLoginSuccess(true)
-                navigate('/test')
-            }
+    //         if (failedValidation) setError(failedValidation.message) 
+    //         else{
+    //             setIsLoading(false)
+    //             setLoginSuccess(true)
+    //             navigate('/test')
+    //         }
 
-        },1000)
+    //     },1000)
         
         
+    // }
+
+
+    async function handleLogin(){
+        try{
+            const res = await axios.post(("http://localhost:3000/login"), {
+                email: email,
+                password : password
+            });
+
+            
+        } catch(err){
+
+        }
     }
 
     return(
