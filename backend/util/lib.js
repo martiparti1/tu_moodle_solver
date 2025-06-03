@@ -1,10 +1,32 @@
-const { timeout } = require("puppeteer");
-
 function delay(ms){
     return new Promise(function(resolve){
         setTimeout(resolve, ms)
     })
 }
+
+async function start_auth(page, quiz_pass){
+    await page.waitForSelector("div.singlebutton.quizstartbuttondiv", {timeout : 3000})
+    await page.click("div.singlebutton.quizstartbuttondiv");
+
+    try{
+        await page.waitForSelector('input#id_submitbutton[type="submit"]', {timeout: 2000})
+        const pass_field = await page.$('input#id_quizpassword[type="password"]');
+        if(pass_field) await page.type('input#id_quizpassword[type="password"]', quiz_pass)
+
+        await delay(300)
+        page.click('input#id_submitbutton[type="submit"]')
+
+        console.log("auth filled // quiz starting")
+    }catch{ console.log("no auth // quizz starting") }
+}
+
+
+
+
+
+
+
+
 
 async function moodle_login(username, password, page){
     page.waitForNavigation({waitUntil: "networkidle0"})
@@ -209,4 +231,4 @@ async function handleQuestionType(page, questionData){
     return questionData;
 }
 
-module.exports = {delay, getQuestionData, moodle_login, submitQuestion, quizAuth}
+module.exports = {delay, getQuestionData, moodle_login, submitQuestion, quizAuth, start_auth}
