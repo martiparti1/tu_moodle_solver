@@ -47,19 +47,7 @@ async function moodle_login(username, password, page){
 }
 
 
-async function quizAuth(page,password){
-    try{
-        await page.waitForSelector('input#id_submitbutton[type="submit"]', {timeout : 1500});
 
-        const pwField = await page.$('input#id_quizpassword[type="password"]')
-        if(pwField) await page.type('input#id_quizpassword[type="password"]', password)
-
-        await Promise.all([
-            page.waitForNavigation({ waitUntil: 'networkidle0' }),
-            page.click('input#id_submitbutton[type="submit"]')
-        ])
-    }catch{}
-}
 
 
 async function getQuestionData(page, questionData){
@@ -231,4 +219,4 @@ async function handleQuestionType(page, questionData){
     return questionData;
 }
 
-module.exports = {delay, getQuestionData, moodle_login, submitQuestion, quizAuth, start_auth}
+module.exports = {delay, getQuestionData, moodle_login, submitQuestion, start_auth}

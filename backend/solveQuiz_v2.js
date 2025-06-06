@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 require('dotenv').config();
-const  {delay, moodle_login, getQuestionData, submitQuestion, quizAuth, start_auth} = require('./util/lib.js');
+const  {delay, moodle_login, getQuestionData, submitQuestion, start_auth} = require('./util/solver_lib.js');
 const  {answerQuestion} = require('./util/groq.js');
 
 async function solveQuiz(quiz_url, quiz_password){

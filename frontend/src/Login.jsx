@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Login(){
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function Login(){
         },
         {
             test : ()=> script_regex.test(email) || script_regex.test(password),
-            message : "fuck you, no XSS allowed"
+            message : "fuck you"
         }
     ]
 
@@ -45,15 +46,15 @@ export default function Login(){
 
     async function handleLogin(){
         try{
-            const res = await axios.post(("http://localhost:3000/login"), {
-                email: email,
-                password : password
+            await axios.post(("http://localhost:3000/login"), {
+                inputEmail: email,
+                inputPassword : password
             });
-
             
         } catch(err){
 
         }
+
     }
 
     return(
@@ -93,6 +94,7 @@ export default function Login(){
                 )}
                 
                 <button 
+                    data-someval = 'PESHOEEEEE'
                     type = "button"
                     className= {
                         `min-w-[200px] min-h-[35px] mt-[10px] font-bold rounded-md text-[20px]
@@ -101,7 +103,7 @@ export default function Login(){
                             `bg-green-500 hover:bg-green-400 cursor-pointer text-white active:scale-95 transition-all duration-200`
                         }`
                     }
-                    onClick={checkInput}
+                    onClick={handleLogin}
                     disabled = {isLoading}
                 >
                     {isLoading ? (
