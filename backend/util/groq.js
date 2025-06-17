@@ -12,7 +12,7 @@ async function answerQuestion(questionData){
     let msgs = [
         {
             role : "system",
-            content : "only answer according to the instructions and ALWAYS in json"
+            content : "only answer according to the instructions and ALWAYS in JSON. wrap both key and value in quotes everytime"
         },
 
         {
@@ -21,9 +21,6 @@ async function answerQuestion(questionData){
         }, 
     ];
 
-    let mdl = "llama3-70b-8192"
-    let temp = 0;
-    let rf = {"type" : "text"}
 
     //alter chat params if we need to process image
     if(questionData.img_base64 != undefined){
@@ -32,23 +29,16 @@ async function answerQuestion(questionData){
             { "type" : "image_url", "image_url" : { "url" : questionData.img_base64} },
             { "type" : "text", "text" : JSON.stringify(qDataText) }
         ];
-
-        mdl = "meta-llama/llama-4-maverick-17b-128e-instruct";
-        temp = 0;
-        rf = {"type" : "json_object"}
     }
-
-
-    console.log(`MODEL USED ${mdl}`)
     
     const chat_response = await groq.chat.completions
     .create({
         messages : msgs,
-        model : mdl,
-        temperature : 0.6,
-        response_format : rf,
-
-        stream : false
+        model : "meta-llama/llama-4-maverick-17b-128e-instruct",
+        temperature : 0,
+        stream : false,
+        response_format : {"type" : "json_object"}
+        
     });
 
     //return answer
