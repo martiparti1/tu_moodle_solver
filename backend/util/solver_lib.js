@@ -134,7 +134,9 @@ async function submitQuestion(page, answer, qType){
             "single choice" : () => { answer_field.children[ans.answer_index].querySelector('input[type="radio"]').click() },
 
             "multiple choice" : () => {
-                //yet to do :(
+                ans.answers_arr.forEach(i =>{ 
+                    answer_field.children[i].querySelector('input[type="checkbox"]').click(); 
+                })
             },
 
             "text" : () => { 
