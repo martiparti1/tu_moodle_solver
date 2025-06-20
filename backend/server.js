@@ -39,24 +39,26 @@ app.post('/start-quiz', async(req,res)=>{
 });
 
 app.post('/login', async (req,res)=>{
-    const {inputEmail,inputPassword} = req.body
+    const {inputUsername,inputPassword} = req.body
 
-    const user = await sql`SELECT * FROM app_accounts WHERE email = ${inputEmail}`
-
+    const user = await sql`SELECT * FROM app_accounts WHERE username = ${inputUsername}`
+    
     if(user.length === 0) {
         console.log("Account doesn't exist")
-        return res.status(401).send("Account doesnt exist")
+        return res.status(401).json({ message : "Invalid login"})
     }
+
     const match = await bcrypt.compare(inputPassword, user[0].password_hash)
 
     if(match){
-        console.log(`Hello and welcome ${user[0].email}`);
-        res.sendStatus(200);
+        console.log(`Hello and welcome ${user[0].username}`);
+        return res.sendStatus(200);
     }
     else{
         console.log("wrong password broman");
-        res.sendStatus(401)
+        res.status(401).json({message : "Invalid login"})
     }
+
 })
 
 server.listen(3000, ()=>console.log("server & websocket listening on port 3000"))

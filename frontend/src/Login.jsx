@@ -4,55 +4,39 @@ import axios from "axios";
 
 export default function Login(){
     const navigate = useNavigate();
-    const [email, setEmail] = useState("")
+    const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [error,setError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [loginSuccess, setLoginSuccess] = useState(false)
 
-    const script_regex = /<(script)[^>]*>.*<\/\1>/g;
-
-    const validation_handling = [
-        {
-            test : () => !email || !password,
-            message : "Fill all fields"
-        },
-        {
-            test : ()=> script_regex.test(email) || script_regex.test(password),
-            message : "fuck you"
-        }
-    ]
-
-    // function checkInput(){
-    //     setIsLoading(true);
-    //     setError("");
-    //     setLoginSuccess(false);
-
-    //     setTimeout(()=>{
-    //         const failedValidation = validation_handling.find(rule => rule.test())
-
-    //         if (failedValidation) setError(failedValidation.message) 
-    //         else{
-    //             setIsLoading(false)
-    //             setLoginSuccess(true)
-    //             navigate('/test')
-    //         }
-
-    //     },1000)
-        
-        
-    // }
 
 
     async function handleLogin(){
+        
+        setLoginSuccess(false);
+        setIsLoading(true);
+        setError("");
+
+
+        if(!username || !password) {
+            setError("Fill all fields");
+            setIsLoading(false);
+            return;
+        }
         try{
-            await axios.post(("http://localhost:3000/login"), {
-                inputEmail: email,
+            const res = await axios.post(("http://localhost:3000/login"), {
+                inputUsername: username,
                 inputPassword : password
             });
+
+            setLoginSuccess(true);
+            setIsLoading(false);
+            navigate('/test')
             
         } catch(err){
-
+            setIsLoading(false);
+            setError(err.response.data.message);
         }
 
     }
@@ -64,9 +48,9 @@ export default function Login(){
                 <input 
                     type="text" 
                     className="input-m mb-[5px]" 
-                    placeholder="example@email.com" 
-                    value={email}
-                    onChange={(e) => {setEmail(e.target.value)}} 
+                    placeholder="username" 
+                    value={username}
+                    onChange={(e) => {setUsername(e.target.value)}} 
                     disabled={isLoading}
                 />
 
