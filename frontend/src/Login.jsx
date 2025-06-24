@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+axios.defaults.withCredentials = true; //send cookies
+
 export default function Login(){
     const navigate = useNavigate();
     const [username, setUsername] = useState("")
@@ -25,7 +27,7 @@ export default function Login(){
             return;
         }
         try{
-            const res = await axios.post(("http://localhost:3000/login"), {
+            await axios.post(("http://localhost:3000/login"), {
                 inputUsername: username,
                 inputPassword : password
             });
@@ -48,7 +50,7 @@ export default function Login(){
                 <input 
                     type="text" 
                     className="input-m mb-[5px]" 
-                    placeholder="username" 
+                    placeholder="Username" 
                     value={username}
                     onChange={(e) => {setUsername(e.target.value)}} 
                     disabled={isLoading}
@@ -78,7 +80,6 @@ export default function Login(){
                 )}
                 
                 <button 
-                    data-someval = 'PESHOEEEEE'
                     type = "button"
                     className= {
                         `min-w-[200px] min-h-[35px] mt-[10px] font-bold rounded-md text-[20px]

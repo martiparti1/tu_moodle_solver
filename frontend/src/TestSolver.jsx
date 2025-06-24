@@ -2,6 +2,9 @@ import { useState } from 'react';
 import example from './assets/example.png'
 import axios from 'axios';
 
+axios.defaults.withCredentials = true; //send cookies
+
+
 export default function TestSolver(){
 
     const [hasExample, setHasExample] = useState(true)
@@ -10,6 +13,8 @@ export default function TestSolver(){
     const [quizLinkInput, setQuizLinkInput] = useState("");
     const [quizResult, setQuizResult] = useState("");
     const [err, setErr] = useState("")
+
+    
 
     async function handleClick(){
         setErr("");
