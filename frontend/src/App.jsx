@@ -1,8 +1,8 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import Login from './Login.jsx'
-import Placeholder from './Placeholder.jsx'
-import TestSolver from './TestSolver.jsx';
-import AuthGuard from './AuthGuard.jsx';
+import Login from './pages/Login.jsx'
+import Placeholder from './components/Placeholder.jsx'
+import TestSolver from './pages/TestSolver.jsx';
+import AuthGuard from './components/AuthGuard.jsx';
 import './index.css'
 
 function App() {

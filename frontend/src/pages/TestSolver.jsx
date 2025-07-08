@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import example from './assets/example.png'
 import axios from 'axios';
-import MoodlePasswordInput from './MoodlePasswordInput';
+import MoodlePasswordInput from '../components/MoodlePasswordInput';
 
 axios.defaults.withCredentials = true; //send cookies
 
