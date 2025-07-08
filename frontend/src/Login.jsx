@@ -80,7 +80,7 @@ export default function Login(){
                 )}
                 
                 <button 
-                    type = "button"
+                    type = "submit"
                     className= {
                         `min-w-[200px] min-h-[35px] mt-[10px] font-bold rounded-md text-[20px]
                         ${ isLoading ? 
