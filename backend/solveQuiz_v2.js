@@ -2,19 +2,17 @@ const puppeteer = require('puppeteer');
 require('dotenv').config();
 const  {delay, moodle_login, getQuestionData, submitQuestion, start_auth} = require('./util/solver_lib.js');
 const  {answerQuestion} = require('./util/groq.js');
+const {getBrowser} = require('./util/server_lib.js');
 
-async function solveQuiz(quiz_url, quiz_password){
-  const browser = await puppeteer.launch({
-    headless: true,
-    // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    defaultViewport : null,
-  });
-  const page = await browser.newPage();
+async function solveQuiz(quiz_url, quiz_password, user_email, user_password){
+  const browser = await getBrowser();
+  const context = await browser.createIncognitoBrowserContext();
+  const page = await context.newPage();
 
   await page.goto(quiz_url, {waitUntil : 'networkidle2'});
   console.log("Page loaded\n");
 
-  let login = await moodle_login(process.env.MOODLE_USERNAME ,  process.env.MOODLE_PASSWORD , page);
+  let login = await moodle_login(user_email,  user_password, page);
   console.log(`${login}\n`)
   await delay(1000)
 
@@ -75,7 +73,8 @@ async function solveQuiz(quiz_url, quiz_password){
   await page.click('button.btn-primary[type="button"][data-action="save"]')
 
   console.log("CLICKED SECOND SUBMIT BUTTON // CLOSING BROWSER")
-  await browser.close();
+  await page.close();
+  await context.close();
 }
 module.exports = {solveQuiz}
 

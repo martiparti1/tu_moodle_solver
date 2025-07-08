@@ -32,13 +32,16 @@ wss.on("connection", (ws) => {
 })
 
 app.post('/start-quiz', async(req,res)=>{
-    const {quizUrl, quizPassword} = req.body;
+    const {quizUrl, quizPassword, moodlePassword} = req.body;
 
+    const cookie = jwt.verify(req.cookies.token, JWT_SECRET);
+
+    const user = await sql`SELECT * FROM app_accounts WHERE id = ${cookie.userId}`
 
     if(!quizUrl || quizUrl == '') return res.status(400).json({badUrl : true})
 
     try{
-        await solveQuiz(quizUrl, quizPassword);
+        await solveQuiz(quizUrl, quizPassword, user[0].moodle_email, moodlePassword);
         res.status(200).send('quiz solving done i believe???')
     }catch(err){
         res.status(500).send(err);
@@ -61,9 +64,9 @@ app.post('/login', async (req,res)=>{
 
         const token = jwt.sign(
             {
+                userId : user[0].id,
                 isLoggedIn : true,
-                isAdmin : user[0].isAdmin,
-                moodle_email : user[0].moodle_email
+                isAdmin : user[0].isAdmin
             },
             JWT_SECRET,
             {expiresIn : '1h'}

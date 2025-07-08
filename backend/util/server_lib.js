@@ -1,9 +1,16 @@
+const puppeteer = require('puppeteer');
 
-const sanitizeHtml = require('sanitize-html');
-function flag_XSS(input){
-    const clean = sanitizeHtml(input);
-    if(input !== clean) return {clean : false}
-    else return {clean : true}
+let browser = null;
+
+async function getBrowser(){
+    if(!browser){
+        browser = await puppeteer.launch({
+            headless : false,
+            // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            defaultViewport : null
+        })
+    }
+    return browser;
 }
 
-module.exports = {flag_XSS}
+module.exports = { getBrowser };
