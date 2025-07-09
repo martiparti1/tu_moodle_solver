@@ -12,7 +12,7 @@ async function answerQuestion(questionData){
     let msgs = [
         {
             role : "system",
-            content : "only answer according to the instructions and ALWAYS in JSON. wrap both key and value in quotes everytime"
+            content : "you are a quiz solving ai that follows its instruction and always replies in JSON format (both key and value are wrapped in quotes)"
         },
 
         {
