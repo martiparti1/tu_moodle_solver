@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import example from './assets/example.png'
+import example from '../assets/example.png'
 import axios from 'axios';
 import MoodlePasswordInput from '../components/MoodlePasswordInput';
 
@@ -28,7 +28,6 @@ export default function TestSolver(){
         try {
 
             const res = await axios.post("http://localhost:3000/start-quiz", {
-                // userId : 
                 quizUrl : quizLinkInput,
                 quizPassword : quizPassword,
                 moodlePassword : moodlePassword
@@ -52,10 +51,6 @@ export default function TestSolver(){
         setIsLoading(false)
     }
 
-    // async function handleClick(){
-    //     // await axios.get("http://localhost:3000/cookie-test");
-    //     console.log(moodlePassword)
-    // }
 
     return(
         <>

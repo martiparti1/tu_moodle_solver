@@ -23,14 +23,8 @@ const server = http.createServer(app) //wrap express with http server for both s
 const wss = new WebSocketServer({server});
 let sockets = [];
 
-wss.on("connection", (ws) => {
-    sockets.push(ws);
 
-    ws.on('close', ()=>{
-        sockets.filter(s => s !==ws )
-    })
-})
-
+//? rest
 app.post('/start-quiz', async(req,res)=>{
     const {quizUrl, quizPassword, moodlePassword} = req.body;
 
@@ -75,7 +69,7 @@ app.post('/login', async (req,res)=>{
         res.cookie("token", token, {
             httpOnly : true,
             secure : false, //put true for production
-            maxAge : 3600000
+            maxAge : 3600000 //1 hour
         })
 
         console.log(`Hello and welcome ${user[0].username}`);
@@ -103,6 +97,25 @@ app.get('/check-auth', (req, res) => {
     }catch {
         res.status(401).json({isLoggedIn : false})
     }
+})
+
+app.get('/get-users', async(req, res) =>{
+    const users = await sql`
+        SELECT aa.id as id, aa.username as username, ad.mdl_email as email, ad.is_special as special, ad.is_admin as admin, ad.is_active as active
+        FROM account_details ad
+        JOIN app_accounts aa on ad.account_id = aa.id
+    `;
+
+    return res.status(200).json(users);
+})
+
+//? websockets
+wss.on("connection", (ws) => {
+    sockets.push(ws);
+
+    ws.on('close', ()=>{
+        sockets.filter(s => s !==ws )
+    })
 })
 
 server.listen(3000, ()=>console.log("server & websocket listening on port 3000"))
