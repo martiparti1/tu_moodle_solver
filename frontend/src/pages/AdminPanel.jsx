@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { useState } from 'react';
 import UserList from '../components/UserList.jsx';
+import CreateAccountForm from '../components/CreateAccountForm.jsx'
 axios.defaults.withCredentials = true; //send cookies
-
-
 
 export default function AdminPanel(){
     
@@ -18,6 +17,7 @@ export default function AdminPanel(){
         setUsers(res.data);
 
         setDisplayUsers(true);
+        setDisplayRegisterField(false)
     }
 
     function createNewAccount(){
@@ -35,10 +35,10 @@ export default function AdminPanel(){
 
                     <div className='flex gap-[20px] my-[20px]'>
                         <button 
-                        className='p-[5px] min-w-[15dvw] min-h-[40px] bg-blue-300 text-black rounded-lg font-semibold cursor-pointer active:scale-95'
+                        className='p-[5px] min-w-[15dvw] min-h-[40px] bg-blue-500 text-white rounded-lg font-semibold cursor-pointer active:scale-95'
                         onClick={listUsers}>List users 🐱‍🐉</button>
                         <button 
-                        className='p-[5px] min-w-[15dvw] min-h-[40px] bg-green-300 text-black rounded-lg font-semibold cursor-pointer active:scale-95'
+                        className='p-[5px] min-w-[15dvw] min-h-[40px] bg-blue-500 text-white rounded-lg font-semibold cursor-pointer active:scale-95'
                         onClick={createNewAccount}
                         >Create new account 🦠</button>
 
@@ -49,7 +49,7 @@ export default function AdminPanel(){
                     )}
 
                     {displayRegisterField && (
-                        <></>
+                        <CreateAccountForm/>
                     )}
                 </div>
                 

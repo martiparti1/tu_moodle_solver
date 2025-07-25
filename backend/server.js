@@ -82,6 +82,40 @@ app.post('/login', async (req,res)=>{
 
 })
 
+app.post('/create-user', async (req, res) => {
+    const {newUser} = req.body;
+
+    //TODO hash password, insert into app_accounts and remaining in account_details
+    try{
+        const hashed_pass = await bcrypt.hash(newUser.password, 12);
+
+        let newUser_id = await sql`
+        INSERT INTO app_accounts (username, password_hash)
+        VALUES (${newUser.username}, ${hashed_pass})
+        RETURNING id`;
+
+
+        await sql`
+        UPDATE account_details 
+        SET mdl_email = ${newUser.email},
+            is_special = ${newUser.isSpecial},
+            is_admin = ${newUser.isAdmin}
+        WHERE account_id = ${newUser_id[0].id}`;
+
+        return res.sendStatus(200);
+    }catch{
+        return res.sendStatus(200);
+    }
+})
+
+app.post('/delete-user', async (req, res) => {
+    const {delete_id} = req.body;
+
+    await sql`DELETE FROM app_accounts WHERE id = ${delete_id}`
+
+    return res.sendStatus(200);
+})
+
 app.get('/check-auth', (req, res) => {
     const token = req.cookies.token;
 

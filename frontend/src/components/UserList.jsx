@@ -1,13 +1,13 @@
+import axios from 'axios';
+
 export default function UserList({users, setUsers}){
 
-    function handleDeleteClick(e){
-        let deleted_id = e.currentTarget.closest('div[data-id]')?.dataset.id;
+    async function handleDeleteClick(e){
+        let delete_this = e.currentTarget.closest('div[data-id]')?.dataset.id;
 
-        // axios server.js / delete-user {user_id : id}
+        await axios.post('http://localhost:3000/delete-user', {delete_id : delete_this})
 
-        console.log(`DELETED user with id : ${deleted_id}`)
-
-        setUsers(prev => prev.filter(user => user.id != deleted_id))
+        setUsers(prev => prev.filter(user => user.id != delete_this))
     }
 
     return(
