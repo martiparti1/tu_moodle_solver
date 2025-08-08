@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+axios.defaults.withCredentials = true;
 
-export default function AuthGuard({children}){
+export default function AuthGuard({admin = false, children}){
 
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     useEffect(() => {
         axios.get("http://localhost:3000/check-auth", {withCredentials : true})
         .then(res => {
-            if(!res.data.isLoggedIn) navigate('/login')
-            else setLoading(false)
+            //! annoying to read lol
+            res.data.isLoggedIn ? ((admin && !res.data.isAdmin) ? navigate('/test') : setLoading(false)) : navigate("/login")
         })
         .catch(() => navigate('/login'))
     }, []);

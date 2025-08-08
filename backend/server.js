@@ -45,7 +45,12 @@ app.post('/start-quiz', async(req,res)=>{
 app.post('/login', async (req,res)=>{
     const {inputUsername,inputPassword} = req.body
 
-    const user = await sql`SELECT * FROM app_accounts WHERE username = ${inputUsername}`
+    const user = await sql`
+        SELECT aa.id as id, aa.password_hash as password_hash, ad.is_admin as isAdmin 
+        FROM app_accounts aa 
+        JOIN account_details ad on aa.id = ad.account_id
+        WHERE username = ${inputUsername}
+    `;
     
     if(user.length === 0) {
         console.log("Account doesn't exist")
@@ -60,12 +65,14 @@ app.post('/login', async (req,res)=>{
             {
                 userId : user[0].id,
                 isLoggedIn : true,
-                isAdmin : user[0].isAdmin
+                isAdmin : user[0].isadmin
             },
             JWT_SECRET,
             {expiresIn : '1h'}
         )
-
+        console.log(`\n ------USER FETCH SHIII SHIIII------ \n`)
+        console.log(user[0])
+        console.log(`\n ------------------ \n`)
         res.cookie("token", token, {
             httpOnly : true,
             secure : false, //put true for production
@@ -73,6 +80,7 @@ app.post('/login', async (req,res)=>{
         })
 
         console.log(`Hello and welcome ${user[0].username}`);
+        console.log(`hey new use your admin status is : ${user[0].isAdmin}`)
         return res.sendStatus(200);
     }
     else{
@@ -116,6 +124,19 @@ app.post('/delete-user', async (req, res) => {
     return res.sendStatus(200);
 })
 
+app.post('/toggle-special', async (req,res) => {
+    const {user_id} = req.body;
+
+    const toggle_this_user = await sql`SELECT is_special FROM account_details WHERE account_id = ${user_id}`
+    
+    console.log(toggle_this_user[0]);
+    console.log(typeof toggle_this_user[0].is_special);
+
+    const new_status = !toggle_this_user[0].is_special;
+
+    console.log(`new status of the fucker is ${new_status   }`)
+})
+
 app.get('/check-auth', (req, res) => {
     const token = req.cookies.token;
 
@@ -123,9 +144,9 @@ app.get('/check-auth', (req, res) => {
 
     try{
         const decoded = jwt.verify(token, JWT_SECRET);
+        console.log(`admin? : ${decoded.isAdmin} \nlogged in? : ${decoded.isLoggedIn}`) 
 
         if(decoded.isLoggedIn) return res.status(200).json({isLoggedIn : true, isAdmin : decoded.isAdmin}) 
-            
         return res.status(401).json({isLoggedIn : false})
 
     }catch {

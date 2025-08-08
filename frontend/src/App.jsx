@@ -19,7 +19,11 @@ function App() {
           </AuthGuard>
         }/>
 
-        <Route path = "/admin" element = {<AdminPanel/>}/>
+        <Route path = "/admin" element = {
+          <AuthGuard admin = {true}>
+            <AdminPanel/>
+          </AuthGuard>
+        }/>
 
         <Route path = "*" element ={<Placeholder/>}/>
         
