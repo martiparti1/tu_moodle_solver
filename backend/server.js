@@ -124,18 +124,26 @@ app.post('/delete-user', async (req, res) => {
     return res.sendStatus(200);
 })
 
-app.post('/toggle-special', async (req,res) => {
-    const {user_id} = req.body;
+app.post('/toggle-user_property', async (req,res) =>{
+    const {user_id, toggle_type} = req.body
+    let [row] = await sql.unsafe(`
+        SELECT ${toggle_type} 
+        FROM account_details
+        WHERE account_id = ${user_id}
+    `);
 
-    const toggle_this_user = await sql`SELECT is_special FROM account_details WHERE account_id = ${user_id}`
-    
-    console.log(toggle_this_user[0]);
-    console.log(typeof toggle_this_user[0].is_special);
+    let new_status = !row[toggle_type];
 
-    const new_status = !toggle_this_user[0].is_special;
+    await sql.unsafe(`
+        UPDATE account_details
+        SET ${toggle_type} = ${new_status}
+        WHERE account_id = ${user_id}
+    `);
 
-    console.log(`new status of the fucker is ${new_status   }`)
+    return res.sendStatus(200);
+
 })
+
 
 app.get('/check-auth', (req, res) => {
     const token = req.cookies.token;
@@ -159,6 +167,7 @@ app.get('/get-users', async(req, res) =>{
         SELECT aa.id as id, aa.username as username, ad.mdl_email as email, ad.is_special as special, ad.is_admin as admin, ad.is_active as active
         FROM account_details ad
         JOIN app_accounts aa on ad.account_id = aa.id
+        ORDER BY aa.id
     `;
 
     return res.status(200).json(users);
