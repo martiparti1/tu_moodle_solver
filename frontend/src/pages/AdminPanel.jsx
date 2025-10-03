@@ -11,7 +11,7 @@ export default function AdminPanel(){
     const [displayRegisterField, setDisplayRegisterField] = useState(false);
     const [users, setUsers] = useState([]);
     async function listUsers(){
-        const res = await axios.get("http://localhost:3000/get-users");
+        const res = await axios.get("http://localhost:3000/users");
 
         console.log(res.data)
         setUsers(res.data);

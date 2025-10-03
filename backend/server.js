@@ -7,6 +7,7 @@ const {sql} = require('./db.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const strict = require('assert/strict');
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -25,7 +26,7 @@ let sockets = [];
 
 
 //? rest
-app.post('/start-quiz', async(req,res)=>{
+app.post('/quiz/start', async(req,res)=>{
     const {quizUrl, quizPassword, moodlePassword} = req.body;
 
     const cookie = jwt.verify(req.cookies.token, JWT_SECRET);
@@ -90,7 +91,7 @@ app.post('/login', async (req,res)=>{
 
 })
 
-app.post('/create-user', async (req, res) => {
+app.post('/users/create', async (req, res) => {
     const {newUser} = req.body;
 
     //TODO hash password, insert into app_accounts and remaining in account_details
@@ -116,7 +117,7 @@ app.post('/create-user', async (req, res) => {
     }
 })
 
-app.post('/delete-user', async (req, res) => {
+app.post('/users/delete', async (req, res) => {
     const {delete_id} = req.body;
 
     await sql`DELETE FROM app_accounts WHERE id = ${delete_id}`
@@ -124,7 +125,7 @@ app.post('/delete-user', async (req, res) => {
     return res.sendStatus(200);
 })
 
-app.post('/toggle-user_property', async (req,res) =>{
+app.post('/users/toggle_property', async (req,res) =>{
     const {user_id, toggle_type} = req.body
     let [row] = await sql.unsafe(`
         SELECT ${toggle_type} 
@@ -145,7 +146,7 @@ app.post('/toggle-user_property', async (req,res) =>{
 })
 
 
-app.get('/check-auth', (req, res) => {
+app.get('/auth', (req, res) => {
     const token = req.cookies.token;
 
     if(!token) return res.status(401).json({isLoggedIn : false})
@@ -162,7 +163,7 @@ app.get('/check-auth', (req, res) => {
     }
 })
 
-app.get('/get-users', async(req, res) =>{
+app.get('/users', async(req, res) =>{
     const users = await sql`
         SELECT aa.id as id, aa.username as username, ad.mdl_email as email, ad.is_special as special, ad.is_admin as admin, ad.is_active as active
         FROM account_details ad
@@ -171,6 +172,16 @@ app.get('/get-users', async(req, res) =>{
     `;
 
     return res.status(200).json(users);
+})
+
+app.post('/logout', async(req, res) =>{
+    res.clearCookie("token", {
+        httpOnly : true,
+        secure : false, //true for prod
+        sameSite : strict
+    });
+
+    return res.sendStatus(200);
 })
 
 //? websockets

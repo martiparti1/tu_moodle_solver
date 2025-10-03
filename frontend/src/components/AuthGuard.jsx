@@ -8,7 +8,7 @@ export default function AuthGuard({admin = false, children}){
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     useEffect(() => {
-        axios.get("http://localhost:3000/check-auth", {withCredentials : true})
+        axios.get("http://localhost:3000/auth", {withCredentials : true})
         .then(res => {
             //! annoying to read lol
             res.data.isLoggedIn ? ((admin && !res.data.isAdmin) ? navigate('/test') : setLoading(false)) : navigate("/login")

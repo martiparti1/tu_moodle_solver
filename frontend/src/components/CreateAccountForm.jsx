@@ -38,7 +38,7 @@ export default function CreateAccountForm(){
         }
 
         try{
-            await axios.post("http://localhost:3000/create-user", { newUser : newUser });
+            await axios.post("http://localhost:3000/users/create", { newUser : newUser });
 
             setMessages({...messages, success_msg : true, backend_err : false})
             

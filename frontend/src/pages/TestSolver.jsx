@@ -27,7 +27,7 @@ export default function TestSolver(){
 
         try {
 
-            const res = await axios.post("http://localhost:3000/start-quiz", {
+            const res = await axios.post("http://localhost:3000/quiz/start", {
                 quizUrl : quizLinkInput,
                 quizPassword : quizPassword,
                 moodlePassword : moodlePassword

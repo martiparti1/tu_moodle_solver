@@ -5,7 +5,7 @@ export default function UserList({users, setUsers}){
     async function handleDeleteClick(e){
         let delete_this = e.currentTarget.closest('div[data-id]')?.dataset.id;
 
-        await axios.post('http://localhost:3000/delete-user', {delete_id : delete_this})
+        await axios.post('http://localhost:3000/users/delete', {delete_id : delete_this})
 
         setUsers(prev => prev.filter(user => user.id != delete_this))
     }
@@ -14,7 +14,7 @@ export default function UserList({users, setUsers}){
         //!for type use the column name from the db
         let toggle_this = e.currentTarget.closest('div[data-id]')?.dataset.id;
 
-        await axios.post("http://localhost:3000/toggle-user_property", {user_id : toggle_this, toggle_type : type})
+        await axios.post("http://localhost:3000/users/toggle_property", {user_id : toggle_this, toggle_type : type})
 
         setUsers(prev => prev.map(user => user.id == toggle_this ? {
                 ...user,
