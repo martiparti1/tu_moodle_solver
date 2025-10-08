@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
-const {WebSocketServer} = require('ws');
 const {solveQuiz} = require('./solveQuiz_v2.js');
 const {sql} = require('./db.js');
 const bcrypt = require('bcrypt');
@@ -19,11 +18,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
-
-const server = http.createServer(app) //wrap express with http server for both services on one port
-const wss = new WebSocketServer({server});
-let sockets = [];
-
 
 //? rest
 app.post('/quiz/start', async(req,res)=>{
@@ -76,8 +70,8 @@ app.post('/login', async (req,res)=>{
         console.log(`\n ------------------ \n`)
         res.cookie("token", token, {
             httpOnly : true,
-            secure : false, //put true for production
-            maxAge : 3600000 //1 hour
+            secure : false, 
+            maxAge : 3600000 //* ==1 hour
         })
 
         console.log(`Hello and welcome ${user[0].username}`);
@@ -94,7 +88,6 @@ app.post('/login', async (req,res)=>{
 app.post('/users/create', async (req, res) => {
     const {newUser} = req.body;
 
-    //TODO hash password, insert into app_accounts and remaining in account_details
     try{
         const hashed_pass = await bcrypt.hash(newUser.password, 12);
 
@@ -177,20 +170,11 @@ app.get('/users', async(req, res) =>{
 app.post('/logout', async(req, res) =>{
     res.clearCookie("token", {
         httpOnly : true,
-        secure : false, //true for prod
+        secure : false,
         sameSite : strict
     });
 
     return res.sendStatus(200);
 })
 
-//? websockets
-wss.on("connection", (ws) => {
-    sockets.push(ws);
-
-    ws.on('close', ()=>{
-        sockets.filter(s => s !==ws )
-    })
-})
-
-server.listen(3000, ()=>console.log("server & websocket listening on port 3000"))
+app.listen(3000, ()=>console.log("express listening"))
